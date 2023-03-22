@@ -1,37 +1,51 @@
-"use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import axios from "axios";
-function Form(): JSX.Element {
-  const [data1, setData1] = useState([]);
-  const [data2, setData2] = useState([]);
 
-  const hanfleSubmit = (e) => {
+interface IFormData {
+  email: string;
+  password: string;
+}
+
+function Form(): JSX.Element {
+  const [formData, setFormData] = useState<IFormData>({
+    email: "",
+    password: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = {
-      email: data1,
-      password: data2,
+    const data: IFormData = {
+      email: formData.email,
+      password: formData.password,
     };
     axios.post("https://sheetdb.io/api/v1/a93dz4cl7jww1", data).then((res) => {
       console.log(res, "res");
     });
   };
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
   return (
     <div>
-      <form onSubmit={hanfleSubmit}>
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="exampleInputEmail1" className="form-label">
             Email address
           </label>
           <input
-            onChange={(e) => {
-              setData1(e.target.value);
-            }}
-            value={data1}
+            onChange={handleChange}
+            value={formData.email}
             type="email"
             className="form-control"
             id="exampleInputEmail1"
             aria-describedby="emailHelp"
+            name="email"
           />
           <div id="emailHelp" className="form-text">
             Well never share your email with anyone else.
@@ -42,13 +56,12 @@ function Form(): JSX.Element {
             Password
           </label>
           <input
-            onChange={(e) => {
-              setData2(e.target.value);
-            }}
-            value={data2}
+            onChange={handleChange}
+            value={formData.password}
             type="password"
             className="form-control"
             id="exampleInputPassword1"
+            name="password"
           />
         </div>
         <div className="mb-3 form-check">
@@ -68,4 +81,5 @@ function Form(): JSX.Element {
     </div>
   );
 }
+
 export default Form;
